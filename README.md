@@ -10,6 +10,23 @@ Week 1 includes three Python projects built for the AI Internship tasks. The goa
 | Rule-Based Chatbot | Matches user messages to topics with regular expressions and chooses a response from the matching intent. | Supports six topics: AI, Python, study tips, project help, sleep, and water; includes help/topics commands, fallback replies, and avoids repeating the same topic reply immediately. |
 | Tic-Tac-Toe | Tkinter GUI game with Minimax decision-making. | Supports Human vs AI and AI vs AI, detects wins and draws, prefers faster wins, and tracks X wins, O wins, and draws across rounds. |
 
+## Project screenshots
+
+### Basic Neural Network — validation predictions
+
+![Ten validation digits with true labels, predictions, and confidence scores](screenshots/mnist-validation.png)
+
+### Basic Neural Network — Kaggle test predictions
+
+![Predictions for ten unlabeled Kaggle test images](screenshots/mnist-kaggle-predictions.png)
+
+### Rule-Based Chatbot
+
+![Chatbot demonstrating its topics, AI and Python responses, and exit command](screenshots/chatbot.png)
+
+### Tic-Tac-Toe
+
+![Tic-Tac-Toe GUI showing a completed draw and score display](screenshots/tic-tac-toe.png)
 ## Week 1 folder
 
 ~~~text
@@ -101,3 +118,4 @@ Choose **Human vs AI** or **AI vs AI** from the mode selector. Minimax searches 
 - The neural network result is from the recorded validation run; results can vary if training settings or the data split change.
 - The model is a learning project intended to demonstrate the neural-network workflow, not a production OCR system.
 - Kaggle attribution: dataset from the [Digit Recognizer competition](https://www.kaggle.com/competitions/digit-recognizer/data).
+
