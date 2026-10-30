@@ -1,0 +1,15 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Kaggle data files (download separately into data/)
+data/
+
+# Generated Kaggle prediction output
+submission.csv
+Submission.csv
