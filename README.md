@@ -1,16 +1,18 @@
 # AI Internship Projects
 
-Week 1 includes three Python projects built for the AI Internship tasks. The goal was to implement the required ideas and understand how each part works.
+These are my three Week 1 projects for the AI internship. I built a handwritten-digit classifier with NumPy, a rule-based chatbot, and a Tic-Tac-Toe game with a Minimax AI. I used the projects to practice turning the ideas from the assignment into working programs.
 
 ## Week 1 results
 
 | Task | What it does | Result |
 |---|---|---|
-| Basic Neural Network | Classifies handwritten digits from the Kaggle MNIST Digit Recognizer dataset using NumPy. | **97.60% validation accuracy** and **0.1804 validation cross-entropy loss**. Training stopped early after 12 epochs; the best validation loss was reached at epoch 9. |
-| Rule-Based Chatbot | Matches user messages to topics with regular expressions and chooses a response from the matching intent. | Supports six topics: AI, Python, study tips, project help, sleep, and water; includes help/topics commands, fallback replies, and avoids repeating the same topic reply immediately. |
-| Tic-Tac-Toe | Tkinter GUI game with Minimax decision-making. | Supports Human vs AI and AI vs AI, detects wins and draws, prefers faster wins, and tracks X wins, O wins, and draws across rounds. |
+| Basic Neural Network | A NumPy neural network that classifies handwritten digits from Kaggle's MNIST Digit Recognizer dataset. | **97.60% validation accuracy** and **0.1804 validation cross-entropy loss** in my recorded run. Early stopping ended training after 12 epochs; the best validation loss was at epoch 9. |
+| Rule-Based Chatbot | A terminal chatbot that uses regular expressions to match messages to topics and choose a response. | Covers AI, Python, study tips, project help, sleep, and water. It also has help/topics commands and fallback replies. |
+| Tic-Tac-Toe | A Tkinter game where Minimax chooses moves. | Play Human vs AI or AI vs AI. The game checks wins and draws and keeps score across rounds. |
 
-## Project screenshots
+## Screenshots
+
+These screenshots show the projects running. The neural network reached 97.60% validation accuracy in the run shown below.
 
 ### Basic Neural Network — validation predictions
 
@@ -27,7 +29,7 @@ Week 1 includes three Python projects built for the AI Internship tasks. The goa
 ### Tic-Tac-Toe
 
 ![Tic-Tac-Toe GUI showing a completed draw and score display](screenshots/tic-tac-toe.png)
-## Week 1 folder
+## Files
 
 ~~~text
 ai-internship-projects/
@@ -46,7 +48,7 @@ ai-internship-projects/
 
 ## 1. Basic Neural Network
 
-Implemented with **NumPy**, without a machine-learning framework:
+I wrote the network with **NumPy**, without using a machine-learning framework. Its main parts are:
 
 - Input: 784 pixel values from each 28×28 grayscale image, scaled to the range 0–1.
 - Hidden layer: 128 units with ReLU activation.
@@ -54,11 +56,11 @@ Implemented with **NumPy**, without a machine-learning framework:
 - Training: mini-batches, cross-entropy loss, backpropagation, momentum, a stratified validation split, and early stopping.
 - Visualizations: training/validation loss and accuracy, a validation confusion matrix, and example predictions.
 
-The saved weights are in mnist_model.npz.
+The trained weights are saved in `mnist_model.npz`, so the presentation and prediction scripts can use the model without training it again.
 
 ### Dataset
 
-Download the Kaggle **Digit Recognizer** files and put train.csv, test.csv, and sample_submission.csv in AI-intern week 1/data/. The data files are intentionally excluded from this repository.
+To train the network or make Kaggle test predictions, download the **Digit Recognizer** files and put `train.csv`, `test.csv`, and `sample_submission.csv` in `AI-intern week 1/data/`. The CSVs are not included in this repository.
 
 ### Setup and run (Windows)
 
@@ -101,7 +103,7 @@ python chatbot.py
 
 It normalizes capitalization, checks regular-expression patterns for supported topics, selects a topic-specific response, and uses a fallback if no intent matches. Type help or topics for the topic list; type bye to exit.
 
-This is a rule-based chatbot: its responses depend on the patterns and response lists in chatbot.py. It does not use a trained language model or retain conversational context.
+The chatbot's answers come from the patterns and response lists in `chatbot.py`. It doesn't use a trained language model or remember earlier messages.
 
 ## 3. Tic-Tac-Toe
 
@@ -111,11 +113,11 @@ Run from the Week 1 folder:
 python tic_tac_toe.py
 ~~~
 
-Choose **Human vs AI** or **AI vs AI** from the mode selector. Minimax searches possible future moves; terminal scores favor quicker wins and delay unavoidable losses. The score display tracks X wins, O wins, and draws. **New Game** clears the board while preserving the score totals.
+Choose **Human vs AI** or **AI vs AI** from the mode selector. Minimax looks ahead at possible moves. The score display tracks X wins, O wins, and draws; **New Game** clears the board and keeps the totals.
 
 ## Notes
 
-- The neural network result is from the recorded validation run; results can vary if training settings or the data split change.
-- The model is a learning project intended to demonstrate the neural-network workflow, not a production OCR system.
+- The neural network score is from my recorded validation run. It may change if the data split or training settings change.
+- These are learning projects, built to practice the ideas and show how they work.
 - Kaggle attribution: dataset from the [Digit Recognizer competition](https://www.kaggle.com/competitions/digit-recognizer/data).
 
