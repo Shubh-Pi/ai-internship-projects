@@ -14,6 +14,7 @@ buttons = []
 game_mode = tk.StringVar(value="Human vs AI")
 current_player = "X"
 game_id = 0
+next_starter = "O"
 
 WIN_LINES = [
     (0,1,2), (3,4,5), (6,7,8), # Rows
@@ -120,17 +121,18 @@ def take_ai_turn(this_game):
         root.after(500, take_ai_turn, this_game)
         
 def reset_game(_selected_mode=None):
-    global current_player, game_id
+    global current_player, game_id, next_starter
     
     game_id += 1
-    current_player = "X"
+    current_player = next_starter
+    next_starter = "X" if next_starter == "O" else "O"
     board[:] = [""] * 9
     
     for button in buttons:
         button.config(text="", state="normal")
         
-    if game_mode.get() == "AI vs AI":
-        status.set("AI (X) is thinking...")
+    if game_mode.get() == "AI vs AI" or current_player == "O":
+        status.set(f"AI ({current_player}) is thinking...")
         root.after(500, take_ai_turn, game_id)
     else:
         status.set("X's turn")
