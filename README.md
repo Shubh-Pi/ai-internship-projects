@@ -54,7 +54,7 @@ The examples below use Windows PowerShell. Python packages are installed separat
 cd "AI-intern week 2/Resume_Screening_AI"
 py -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install Flask pdfplumber scikit-learn
+python -m pip install -r ..\requirements.txt
 python app.py
 ~~~
 
@@ -68,7 +68,7 @@ Install the app's Python dependencies, then run Ollama locally and download the 
 cd "AI-intern week 2/AI_chatbot"
 py -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install Flask requests beautifulsoup4
+python -m pip install -r ..\requirements.txt
 ollama pull qwen3:4b-instruct
 python app.py
 ~~~
@@ -83,7 +83,7 @@ This app uses Ollama's `qwen3.5:4b` model by default. Start Ollama, install the 
 cd "AI-intern week 2/AI_content_Generator"
 py -m venv .venv
 .venv\Scripts\Activate.ps1
-python -m pip install Flask requests
+python -m pip install -r ..\requirements.txt
 ollama pull qwen3.5:4b
 python app.py
 ~~~
