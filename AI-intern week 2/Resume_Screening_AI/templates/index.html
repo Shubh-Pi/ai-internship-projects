@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Shortlist — Resume Screening</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <script defer 
+            src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Shortlist home">
+            <span class="brand-mark" aria-hidden="true">S</span>
+            <span class="brand-copy">
+                <strong>SHORTLIST</strong>
+                <small>RESUME SCREENING</small>
+            </span>
+        </a>
+
+        <nav class="progress-nav" aria-label="Workflow">
+            <span class="{% if candidates is none %}current{% endif %}">
+                 Candidate review
+            </span>
+        </nav>
+
+        
+    </header>
+
+    <main class="page">
+        {% if error %}
+          <div class="alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        {% if candidates is none %}
+          <section class="intro">
+            <p class="eyebrow">Resume screening / 01</p>
+            <h1>Build your<br><span>shortlist.</span></h1>
+            <p class="intro-copy">
+                Compare resumes with a job description, then review the match signals for each candidate.
+            </p>
+          </section>
+
+          <section class="setup-layout">
+            <form class="setup-card"
+                  action="{{ url_for('screen') }}"
+                  method="post"
+                  enctype="multipart/form-data">
+                
+                <div class="section-heading">
+                    <span class="step-number">01</span>
+                    <div>
+                        <h2>Job description</h2>
+                        <p>Paste the role details you want to compare against.</p>
+                    </div>
+                </div>
+
+                <label class="field-label" for="job-description">
+                    Role details
+                </label>
+                <textarea id="job-description"
+                          name="job_description"
+                          max_length="12000"
+                          placeholder="Include responsiblities, skills, and qualifications..."
+                          required>{{ request.form.get('job_description', '') }}</textarea>
+
+                <div class="section-heading upload-heading">
+                    <span class="step-number">02</span>
+                    <div>
+                        <h2>Resume files</h2>
+                        <p>Upload PDF or TXT files, upto 20 resumes.</p>
+                    </div>
+                </div>
+
+                <label class="dropzone" for="resumes">
+                    <span class="upload-icon" aria-hidden="true">↑</span>
+                    <strong>Choose resume files</strong>
+                    <span>PDF or TXT . 8 MB maximum per file</span>
+                    <input id="resumes"
+                           name="resumes"
+                           type="file"
+                           accept=".pdf,.txt,application/pdf,text/plain"
+                           multiple
+                           required>
+                </label>
+
+                <div id="file-list" class="file-list" aria-live="polite"></div>
+
+                <div class="form-footer">
+                    <p>Resume files are processed locally for this review.</p>
+                    <button class="button button-primary" type="submit">
+                        <span class="button-label">Compare resumes</span>
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+            </form>
+
+            <aside class="scoring-card">
+                <p class="eyebrow">Scoring approach</p>
+                <h2>Two signals.<br>One clear score.</h2>
+
+                <div class="weight-row">
+                    <span>Text similarity</span>
+                    <strong>65%</strong>
+                </div>
+                <div class="weight-bar" aria-hidden="true">
+                    <span style="width: 65%"></span>
+                </div>
+
+                <div class="weight-row">
+                    <span>Job skill coverage</span>
+                    <strong>35%</strong>
+                </div>
+                <div class="weight-bar" aria-hidden="true">
+                    <span style="width: 35%"></span>
+                </div>
+
+                <p class="scoring-note">
+                    The score shows text alignment with the job description.
+                    Review candidate details before making decision.
+                </p>
+            </aside>
+          </section>
+
+          {% else %}
+          <section class="results-heading">
+            <div>
+                <p class="eyebrow">Candidate review / 02</p>
+                <h1>Your shortlist.</h1>
+                <p class="intro-copy">
+                    {{ candidates|length }} candidate{% if candidates|length != 1 %}s{% endif %}
+                    ranked by match score.
+                </p>
+            </div>
+
+            <div class="results-layout">
+                <a class="button" href="{{ url_for('index') }}">New review</a>
+                <a class="button button-primary"
+                   href="{{ url_for('download_report', token=report_token) }}">
+                    Download CSV <span aria-hidden="true">↓</span>
+                </a>
+            </div>
+          </section>
+
+          <div class="results-layout">
+            <section class="candidate-list" aria-label="Ranked candidates">
+                {% for candidate in candidates %}
+                <article class="candidate-card">
+                    <div class="candidate-top">
+                        <div class="candidate-identity">
+                            <span class="rank">{{ "%02d"|format(loop.index)}}</span>
+                            <div>
+                                <h2>{{ candidate.name }}</h2>
+                                <p class="filename">{{ candidate.filename }}</p>
+                            </div>
+                        </div>
+
+                        <div class="score">
+                            <strong>{{ candidate.score }}<small>%</small></strong>
+                            <span>match score</span>
+                        </div>
+                    </div>
+
+                    <div class="metrics">
+                        <span>
+                            Text similarity
+                            <strong>{{ candidate.similarity }}</strong>
+                        </span>
+                        <span>
+                            Skill coverage
+                            <strong>{{ candidate.skill_coverage }}</strong>
+                        </span>
+                    </div>
+
+                    <progress class="meter"
+                              value="{{ candidate.score }}"
+                              max="100"
+                              aria-label="{{ candidate.score }} percent match">
+                        {{ candidate.score }}%
+                    </progress>
+
+                    <div class="skill-groups">
+                        <section class="skill-group">
+                            <h3>Matched</h3>
+                            <div class="chips">
+                                {% for skill in candidate.matched_skills %}
+                                    <span class="chip chip-matched">{{ skill }}</span>
+                                {% else %}
+                                    <span class="empty-label">No skills matched</span>
+                                {% endfor %}
+                            </div>
+                        </section>
+
+                        <section class="skill-group">
+                            <h3>Also on resume</h3>
+                            <div class="chips">
+                                {% for skill in candidate.extra_skills %}
+                                    <span class="chip">{{ skill }}</span>
+                                {% else %}
+                                    <span class="empty-label">No additional listed skills</span>
+                                {% endfor %}
+                            </div>
+                        </section>
+                        
+                        <section class="skill-group">
+                            <h3>Not found in resume</h3>
+                            <div class="chips">
+                                {% for skill in candidate.not_found_skills %}
+                                    <span class="chip chip-not-found">{{ skill }}</span>
+                                {% else %}
+                                    <span class="empty-label">All detected job skills were found</span>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    </div>
+
+                    <details class="candidate-details">
+                        <summary>Review education and experience</summary>
+                        <div class="detail-grid">
+                            <section>
+                                <h4>Education</h4>
+                                <p>{{ candidate.education }}</p>
+                            </section>
+                            <section>
+                                <h4>Experience</h4>
+                                <p>{{ candidate.experience }}</p>
+                            </section>
+                        </div>
+                    </details>
+                </article>
+              {% endfor %}
+            </section>
+
+            <aside class="scoring-card results-scoring">
+                <p class="eyebrow">Score breakdown</p>
+                <h2>How matches<br>are calculated.</h2>
+
+                <div class="weight-row">
+                    <span>Text similarity</span>
+                    <strong>65%</strong>
+                </div>
+                <div class="weight-bar" aria-hidden="true">
+                    <span style="width: 65%"></span>
+                </div>
+
+                <div class="weight-row">
+                    <span>JOb skill coverage</span>
+                    <strong>35%</strong>
+                </div>
+                <div class="weight-bar" aria-hidden="true">
+                    <span style="width: 35%"></span>
+                </div>
+
+                <p class="scoring-note">
+                    "Not found" means a skill wasn't detected in the resume.
+                    It doesn't prove the candidate lacks that skill.
+                </p>
+            </aside>
+          </div>
+
+          <p class="review-note">
+            Score indicate text alignment. They are a review aid, not a 
+            prediction of job performance.
+          </p>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <span> SHORTLIST • RESUME SCREENING</span>
+        <span>Review match signals with care.</span>
+    </footer>
+</body>
+</html>

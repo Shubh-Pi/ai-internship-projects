@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fieldnote — Local Content Studio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js')}}" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Fieldnote Content Studio">
+        <span class="brand-mark">F</span>
+        <span><strong>FIELDNOTE</strong><small>LOCAL CONTENT STUDIO</small></span>
+      </a>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">A quiet space for good words</p>
+        <h1>Make something<br><em>worth reading.</em></h1>
+        <p>Your topic, your tone, your local model. Start with a brief and shape the draft from there.</p>
+      </section>
+
+      <div class="workspace">
+        <section class="panel form-panel" aria-labelledby="brief-title">
+          <p class="eyebrow">01 / THE BRIEF</p>
+          <h2 id="brief-title">Set the direction</h2>
+
+          <form id="generator-form">
+            <div class="field">
+              <label for="content-type">What are we making?</label>
+              <select id="content-type">
+                <option value="blog">Blog post</option>
+                <option value="caption">Social media caption</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="topic">Topic <span class="required">*</span></label>
+              <textarea id="topic" rows="3" maxlength="240" required
+                placeholder="A small urban garden and the people who grow there"></textarea>
+              <div class="field-meta"><span>Be as specific as you like</span><span id="topic-count">0 / 240</span></div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="tone">Tone</label>
+                <select id="tone">
+                  <option value="friendly">Friendly</option>
+                  <option value="professional">Professional</option>
+                  <option value="playful">Playful</option>
+                  <option value="persuasive">Persuasive</option>
+                  <option value="informative">Informative</option>
+                  <option value="inspiring">Inspiring</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="length">Length</label>
+                <select id="length">
+                  <option value="short">Short</option>
+                  <option value="standard" selected>Standard</option>
+                  <option value="detailed">Detailed</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="platform-field" class="field" hidden>
+              <label for="platform">Platform</label>
+              <select id="platform">
+                <option>Instagram</option>
+                <option>LinkedIn</option>
+                <option>Facebook</option>
+                <option>X</option>
+                <option>General</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="audience">Who is it for? <span class="optional">Optional</span></label>
+              <input id="audience" maxlength="160" placeholder="Curious first-time gardeners">
+            </div>
+
+            <div class="field">
+              <label for="key-points">Points to include <span class="optional">Optional</span></label>
+              <textarea id="key-points" rows="2" maxlength="600"
+                placeholder="Community, fresh food, learning together"></textarea>
+            </div>
+
+            <label id="cta-field" class="checkbox" hidden>
+              <input id="call-to-action" type="checkbox">
+              <span>End with a call to action</span>
+            </label>
+
+            <button id="generate-button" class="button primary" type="submit">
+              <span id="generate-label">Generate draft</span><span>↗</span>
+            </button>
+            <button id="stop-button" class="button stop" type="button" hidden>Stop generation</button>
+            <p id="form-error" class="error" role="alert" hidden></p>
+            <p class="local-note">Runs locally · <code>{{ model_name }}</code></p>
+          </form>
+        </section>
+
+        <section class="panel output-panel" aria-labelledby="draft-title">
+          <div class="output-heading">
+            <div><p class="eyebrow">02 / THE DRAFT</p><h2 id="draft-title">Your words, taking shape</h2></div>
+            <span id="draft-state" class="draft-state">Waiting for a topic</span>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <span class="spark">✳</span>
+            <h3>A good draft starts with a good brief.</h3>
+            <p>Choose a format, add a topic, and your local model will take it from there.</p>
+            <div class="samples">
+              <span>Try a topic</span>
+              <button type="button" data-topic="How community gardens bring neighbors together">Community gardens</button>
+              <button type="button" data-topic="Simple ways to build a calmer morning routine">A calmer morning</button>
+              <button type="button" data-topic="Why repairing old clothes is worth learning">Repairing clothes</button>
+            </div>
+          </div>
+
+          <article id="draft-card" class="draft-card" hidden>
+            <pre id="draft-text" class="draft-text" aria-live="polite"></pre>
+            <footer class="draft-footer">
+              <div class="counts">
+                <span><strong id="word-count">0</strong> words</span>
+                <span><strong id="character-count">0</strong> characters</span>
+                <span id="generation-time"></span>
+              </div>
+              <div class="actions">
+                <button id="copy-button" class="button quiet" type="button">Copy</button>
+                <button id="regenerate-button" class="button outline" type="button">Regenerate</button>
+              </div>
+            </footer>
+          </article>
+
+          <section id="preview" class="preview" hidden aria-labelledby="preview-title">
+            <div class="preview-heading">
+              <div><p class="eyebrow">REVISED VERSION</p><h3 id="preview-title">Review before replacing</h3></div>
+              <span>Preview</span>
+            </div>
+            <pre id="preview-text" class="draft-text" aria-live="polite"></pre>
+            <footer class="draft-footer">
+              <div class="counts">
+                <span><strong id="preview-words">0</strong> words</span>
+                <span><strong id="preview-characters">0</strong> characters</span>
+              </div>
+              <div class="actions">
+                <button id="discard-button" class="button quiet" type="button">Keep current</button>
+                <button id="apply-button" class="button primary" type="button">Use this version</button>
+              </div>
+            </footer>
+          </section>
+
+          <section id="refine-tools" class="refine-tools" hidden>
+            <p class="eyebrow">03 / MAKE IT YOURS</p>
+            <h3>Refine this draft</h3>
+            <div class="quick-actions">
+              <button class="chip" type="button" data-refine="Make this shorter while keeping the main message.">Shorter</button>
+              <button class="chip" type="button" data-refine="Make this more engaging without adding unsupported facts.">More engaging</button>
+              <button class="chip" type="button" data-refine="Use simpler language with the same meaning.">Simpler</button>
+            </div>
+            <form id="refine-form">
+              <label class="sr-only" for="refine-instruction">Describe how to refine this draft</label>
+              <input id="refine-instruction" maxlength="240" placeholder="Or describe a change…">
+              <button id="refine-button" class="button dark" type="submit">Refine ↗</button>
+            </form>
+          </section>
+
+          <p id="toast" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+
+      <footer class="page-footer"><span>FIELDNOTE CONTENT STUDIO</span><span>Your drafts stay in this browser session.</span></footer>
+    </main>
+  </div>
+</body>
+</html>

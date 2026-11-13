@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Fieldnote | AI/ML Project Mentor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #202124;
+      --surface: #292a2d;
+      --surface-raised: #303134;
+      --surface-muted: #3c4043;
+      --ink: #e8eaed;
+      --ink-soft: #c4c7c5;
+      --ink-faint: #9aa09b;
+      --line: #45484b;
+      --line-strong: #5c625e;
+      --accent: #a8d5b8;
+      --accent-hover: #c2e5cd;
+      --accent-soft: #33443a;
+      --warm: #f0ad8c;
+      --warm-soft: #49352d;
+      --focus: #f1bd75;
+      --shadow: 0 18px 44px rgb(0 0 0 / 36%);
+      --font-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-reading: Georgia, "Times New Roman", serif;
+      --font-code: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--page); }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: var(--page);
+      color: var(--ink);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, textarea { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--accent); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr) 276px;
+      min-height: 100dvh;
+      max-width: 1680px;
+      margin: 0 auto;
+      border-inline: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding: 24px 16px 18px;
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 42px;
+      padding: 0 8px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .sidebar-close { display: none; border: 1px solid var(--line); background: transparent; padding: 6px 9px; cursor: pointer; }
+    .brand-mark {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--font-reading);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .brand-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: .14em;
+    }
+    .brand-subtitle {
+      display: block;
+      margin-top: 1px;
+      color: var(--ink-faint);
+      font-size: 10px;
+      letter-spacing: .06em;
+    }
+
+    .side-primary { margin-top: 32px; }
+    .new-chat {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface-raised);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .16s ease, background-color .16s ease;
+    }
+    .new-chat:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .new-chat span:first-child { font-weight: 650; }
+    .new-chat .plus { color: var(--accent); font-size: 20px; line-height: 1; }
+    .side-label {
+      margin: 27px 10px 9px;
+      color: var(--ink-faint);
+      font-family: var(--font-code);
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .side-list { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+    .side-link {
+      display: block;
+      overflow: hidden;
+      padding: 9px 10px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .side-link:hover { background: var(--surface-muted); color: var(--ink); }
+    .side-link[aria-current="page"] {
+      border-left: 2px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-weight: 620;
+    }
+    .side-link small { display: block; margin-top: 2px; color: var(--ink-faint); font-size: 11px; font-weight: 400; }
+    .side-spacer { flex: 1; min-height: 28px; }
+    .local-note {
+      padding: 13px 11px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-faint);
+      font-size: 11px;
+    }
+    .local-note strong { display: block; margin-bottom: 3px; color: var(--ink-soft); font-size: 11px; font-weight: 650; }
+
+    .workspace { display: flex; min-width: 0; min-height: 100dvh; flex-direction: column; }
+    .topbar {
+      display: flex;
+      min-height: 66px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .crumbs { display: flex; align-items: center; gap: 10px; color: var(--ink-faint); font-size: 12px; }
+    .crumbs strong { color: var(--ink-soft); font-weight: 620; }
+    .crumb-separator { color: var(--line-strong); }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .draft-label {
+      padding: 4px 7px;
+      border: 1px solid var(--line);
+      color: var(--ink-faint);
+      font-family: var(--font-code);
+      font-size: 9px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .mobile-menu { display: none; border: 0; background: transparent; padding: 6px; cursor: pointer; }
+
+    .conversation-wrap {
+      display: flex;
+      width: 100%;
+      max-width: 930px;
+      flex: 1;
+      flex-direction: column;
+      align-self: center;
+      padding: 34px clamp(22px, 4.2vw, 58px) 24px;
+    }
+    .conversation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-family: var(--font-code);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(22px, 2.3vw, 29px); font-weight: 650; letter-spacing: -.045em; line-height: 1.16; }
+    .heading-meta { margin: 8px 0 0; color: var(--ink-faint); font-size: 12px; }
+    .project-tag {
+      flex: 0 0 auto;
+      margin-top: 5px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      color: var(--ink-faint);
+      font-family: var(--font-code);
+      font-size: 9px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .preview-notice {
+      margin: 0 0 24px;
+      padding: 9px 12px;
+      border-left: 2px solid var(--warm);
+      background: var(--warm-soft);
+      color: var(--ink-soft);
+      font-size: 11px;
+    }
+    .preview-notice strong { color: var(--ink); font-weight: 650; }
+
+    .thread { display: grid; gap: 25px; }
+    .message { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; }
+    .message.user { grid-template-columns: minmax(0, 1fr); justify-items: end; }
+    .message-mark {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      color: var(--accent);
+      font-family: var(--font-reading);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .message.user .message-body { max-width: min(84%, 560px); padding: 11px 14px; background: var(--surface-muted); }
+    .message-body { min-width: 0; }
+    .message-meta { display: flex; align-items: baseline; gap: 9px; margin: 0 0 7px; color: var(--ink-faint); font-family: var(--font-code); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
+    .message-meta strong { color: var(--ink-soft); font-family: var(--font-ui); font-size: 11px; font-weight: 680; letter-spacing: 0; text-transform: none; }
+    .message p { margin: 0 0 10px; color: var(--ink-soft); font-size: 13px; line-height: 1.68; }
+    .message p:last-child { margin-bottom: 0; }
+    .message ol { display: grid; gap: 7px; margin: 11px 0 12px; padding-left: 19px; color: var(--ink-soft); font-size: 13px; line-height: 1.58; }
+    .message li::marker { color: var(--accent); font-family: var(--font-code); font-size: 11px; }
+    .inline-code { padding: 1px 4px; background: var(--surface-muted); color: var(--ink); font-family: var(--font-code); font-size: .92em; }
+    .source-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 29px;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink-soft);
+      font-size: 10px;
+      text-decoration: none;
+    }
+    .source-link:hover { border-color: var(--accent); color: var(--accent); }
+    .source-link span { color: var(--accent); font-family: var(--font-code); font-size: 9px; }
+    .follow-up { margin: 24px 0 0 42px; color: var(--ink-faint); font-size: 12px; }
+    .follow-up strong { color: var(--ink-soft); font-weight: 630; }
+
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: auto 0 13px 42px; padding-top: 30px; }
+    .suggestion {
+      min-height: 32px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-soft);
+      font-size: 11px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+    }
+    .suggestion:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+    .composer-wrap { position: sticky; bottom: 0; padding-top: 10px; background: linear-gradient(to bottom, transparent 0, var(--surface) 15px); }
+    .composer {
+      padding: 10px 12px 9px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface-raised);
+      box-shadow: var(--shadow);
+    }
+    .composer:focus-within { border-color: var(--accent); }
+    .composer textarea {
+      display: block;
+      width: 100%;
+      min-height: 54px;
+      max-height: 160px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .composer textarea::placeholder { color: var(--ink-faint); opacity: 1; }
+    .composer-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+    .source-toggle { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-soft); font-size: 11px; cursor: pointer; }
+    .source-toggle input { width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
+    .send-group { display: flex; align-items: center; gap: 10px; }
+    .key-hint { color: var(--ink-faint); font-family: var(--font-code); font-size: 9px; }
+    .send-button {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background-color .15s ease, transform .15s ease;
+    }
+    .send-button:hover { background: var(--accent-hover); }
+    .send-button:active { transform: translateY(1px); }
+    .composer-footnote { margin: 7px 2px 0; color: var(--ink-faint); font-size: 10px; }
+
+    .context-rail { min-height: 100dvh; padding: 26px 18px; border-left: 1px solid var(--line); background: var(--surface); }
+    .rail-header { display: flex; min-height: 40px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .rail-header h2 { margin: 0; color: var(--ink-faint); font-family: var(--font-code); font-size: 9px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+    .rail-section { padding: 19px 0 20px; border-bottom: 1px solid var(--line); }
+    .rail-kicker { margin: 0 0 8px; color: var(--ink-faint); font-family: var(--font-code); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+    .rail-section h3 { margin: 0 0 6px; font-size: 14px; font-weight: 650; letter-spacing: -.02em; }
+    .rail-section p { margin: 0; color: var(--ink-faint); font-size: 11px; line-height: 1.58; }
+    .rail-section .current-step { margin-top: 13px; padding-left: 10px; border-left: 2px solid var(--accent); color: var(--ink-soft); }
+    .step-number { display: block; margin-bottom: 3px; color: var(--accent); font-family: var(--font-code); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+    .topic-list { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
+    .topic-list li { padding: 7px 0; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; }
+    .topic-list li:last-child { border-bottom: 0; }
+    .topic-list li::before { content: "+"; display: inline-block; width: 17px; color: var(--accent); font-family: var(--font-code); }
+    .source-policy { margin-top: 17px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 10px; line-height: 1.6; }
+    .source-policy strong { color: var(--ink-soft); font-weight: 650; }
+    .context-mobile { display: none; }
+
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 10; max-width: min(360px, calc(100vw - 36px)); padding: 12px 15px; border: 1px solid var(--line-strong); background: var(--surface-raised); box-shadow: var(--shadow); color: var(--ink); font-size: 12px; }
+    .toast[hidden] { display: none; }
+
+    @media (max-width: 1120px) {
+      .app-shell { grid-template-columns: 218px minmax(0, 1fr); }
+      .context-rail { display: none; }
+      .context-mobile { display: block; margin: 4px 0 18px; border-bottom: 1px solid var(--line); }
+      .context-mobile summary { padding: 11px 0; color: var(--ink-soft); font-size: 11px; cursor: pointer; }
+      .context-mobile .mobile-context-body { padding: 0 0 13px; color: var(--ink-faint); font-size: 11px; }
+    }
+    @media (max-width: 720px) {
+      .app-shell { display: block; border: 0; }
+      .sidebar { display: none; position: fixed; inset: 0 auto 0 0; z-index: 20; width: min(290px, 84vw); min-height: 100dvh; box-shadow: var(--shadow); }
+      .sidebar.open { display: flex; }
+      .sidebar.open { padding-top: 14px; }
+      .brand-row { display: flex; align-items: center; justify-content: space-between; }
+      .sidebar-close { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; min-height: 36px; color: var(--ink-soft); }
+      .sidebar-close:hover { background: var(--surface-muted); }
+      .topbar { min-height: 58px; padding: 0 15px; }
+      .mobile-menu { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-soft); font-size: 11px; }
+      .crumbs { display: none; }
+      .top-actions { margin-left: auto; }
+      .conversation-wrap { padding: 25px 16px 18px; }
+      .conversation-heading { margin-bottom: 20px; }
+      .heading-meta { max-width: 260px; font-size: 11px; }
+      .project-tag { display: none; }
+      .preview-notice { margin-bottom: 19px; }
+      .thread { gap: 21px; }
+      .message { grid-template-columns: 25px minmax(0, 1fr); gap: 9px; }
+      .message-mark { width: 24px; height: 24px; font-size: 12px; }
+      .message.user .message-body { max-width: 94%; }
+      .message p, .message ol { font-size: 12px; }
+      .suggestions { margin-left: 34px; padding-top: 22px; }
+      .key-hint { display: none; }
+      .composer { padding: 9px; }
+    }
+    @media (max-width: 410px) {
+      .draft-label { display: none; }
+      .conversation-wrap { padding-inline: 12px; }
+      .composer-tools { align-items: flex-start; }
+      .source-toggle { max-width: 185px; line-height: 1.35; }
+      .send-button { padding-inline: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="brand-row">
+      <a class="brand" href="#main" aria-label="Fieldnote project mentor home">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span><span class="brand-name">FIELDNOTE</span><span class="brand-subtitle">AI / ML project mentor</span></span>
+      </a>
+      <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">✕</button>
+      </div>
+
+      <div class="side-primary">
+        <button class="new-chat" id="newChat" type="button"><span>New conversation</span><span class="plus" aria-hidden="true">+</span></button>
+      </div>
+
+      <p class="side-label">Recent work</p>
+      <ul class="side-list">
+        <li><a class="side-link" href="#main" aria-current="page">Image classifier<small>Planning the data split</small></a></li>
+        <li><a class="side-link" href="#main">Review a model result<small>Yesterday</small></a></li>
+        <li><a class="side-link" href="#main">Choose a first project<small>Nov 5</small></a></li>
+      </ul>
+
+      <p class="side-label">Explore topics</p>
+      <ul class="side-list">
+        <li><a class="side-link" href="#topics">Project planning</a></li>
+        <li><a class="side-link" href="#topics">Data and datasets</a></li>
+        <li><a class="side-link" href="#topics">Training and evaluation</a></li>
+      </ul>
+
+      <div class="side-spacer"></div>
+      <div class="local-note"><strong>Conversation storage</strong>This draft proposes browser-only saving: no account, no cross-device sync.</div>
+    </nav>
+
+    <main class="workspace" id="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="menuToggle" type="button" aria-expanded="false" aria-controls="sidebar"><span aria-hidden="true">☰</span><span>Menu</span></button>
+        <div class="crumbs"><span>Workspace</span><span class="crumb-separator" aria-hidden="true">/</span><strong>Project mentor</strong></div>
+        <div class="top-actions">
+          <span class="draft-label">Design draft</span>
+        </div>
+      </header>
+
+      <section class="conversation-wrap" aria-labelledby="conversationTitle">
+        <div class="conversation-heading">
+          <div>
+            <p class="eyebrow">Project workspace</p>
+            <h1 id="conversationTitle">Image classifier</h1>
+            <p class="heading-meta">A practical thread for shaping the next step of your project.</p>
+          </div>
+          <span class="project-tag">Example project</span>
+        </div>
+
+        <p class="preview-notice"><strong>Visual preview.</strong> Sample messages and sources are shown here. The local model and live lookup are not connected yet.</p>
+
+        <details class="context-mobile">
+          <summary>Show project context</summary>
+          <div class="mobile-context-body">Current goal: prepare a reliable train and validation split. Next step: inspect labels and class balance before training.</div>
+        </details>
+
+        <div class="thread" id="thread" aria-live="polite" aria-label="Conversation">
+          <article class="message user">
+            <div class="message-body">
+              <p class="message-meta"><strong>You</strong><span>10:42</span></p>
+              <p>I’m building an image classifier. What should I check before training?</p>
+            </div>
+          </article>
+
+          <article class="message assistant">
+            <div class="message-mark" aria-hidden="true">F</div>
+            <div class="message-body">
+              <p class="message-meta"><strong>Fieldnote</strong><span>Project mentor</span></p>
+              <p>Start with the data before changing the model. A few checks now can prevent confusing results later:</p>
+              <ol>
+                <li>Confirm the labels match the images and check how many examples each class has.</li>
+                <li>Look for unreadable files, duplicates, and unexpected image sizes.</li>
+                <li>Make separate training and validation sets. If classes are uneven, preserve their proportions in the split.</li>
+                <li>Keep a final test set untouched until you have finished choosing the model.</li>
+              </ol>
+              <p>Are your images organized in folders, a CSV file, or both? I can suggest the next step for your setup.</p>
+              <div class="source-list" aria-label="Sources used in this sample answer">
+                <a class="source-link" href="https://developers.google.com/machine-learning/crash-course" target="_blank" rel="noreferrer"><span>01</span>Google ML Crash Course</a>
+                <a class="source-link" href="https://scikit-learn.org/stable/modules/cross_validation.html" target="_blank" rel="noreferrer"><span>02</span>scikit-learn · validation</a>
+              </div>
+            </div>
+          </article>
+
+          <p class="follow-up"><strong>Context remembered:</strong> image classifier · data preparation</p>
+        </div>
+
+        <div class="suggestions" aria-label="Suggested prompts">
+          <button class="suggestion" type="button" data-prompt="How should I split an imbalanced dataset?">Split an imbalanced dataset</button>
+          <button class="suggestion" type="button" data-prompt="Which evaluation metric should I start with for a classifier?">Choose an evaluation metric</button>
+          <button class="suggestion" type="button" data-prompt="Explain stratified splitting in simple terms.">Explain stratified splitting</button>
+        </div>
+
+        <div class="composer-wrap">
+          <form class="composer" id="chatForm">
+            <label class="sr-only" for="messageInput">Ask the project mentor</label>
+            <textarea id="messageInput" name="message" rows="2" placeholder="Describe your project or ask about the next step…" maxlength="1200"></textarea>
+            <div class="composer-tools">
+              <label class="source-toggle" for="sourceSearch">
+                <input id="sourceSearch" type="checkbox" checked>
+                <span>Search approved sources when useful</span>
+              </label>
+              <div class="send-group"><span class="key-hint">ENTER TO SEND · SHIFT+ENTER FOR A NEW LINE</span><button class="send-button" type="submit">Send <span aria-hidden="true">↗</span></button></div>
+            </div>
+          </form>
+          <p class="composer-footnote" id="sourceStatus">Replies include relevant source links when available.</p>
+        </div>
+      </section>
+    </main>
+
+    <aside class="context-rail" aria-labelledby="contextTitle">
+      <div class="rail-header"><h2 id="contextTitle">Working context</h2></div>
+      <section class="rail-section">
+        <p class="rail-kicker">Example project</p>
+        <h3>Image classifier</h3>
+        <p>Classify images into a small set of categories. The mentor keeps this topic available for follow-up questions.</p>
+        <p class="current-step"><span class="step-number">Current focus</span>Check labels, balance, and the validation split.</p>
+      </section>
+      <section class="rail-section" id="topics">
+        <p class="rail-kicker">Mentor can help with</p>
+        <ul class="topic-list">
+          <li>Scoping an idea</li>
+          <li>Choosing an algorithm</li>
+          <li>Finding and preparing data</li>
+          <li>Training and evaluation</li>
+          <li>Debugging and next steps</li>
+        </ul>
+      </section>
+      <section class="rail-section">
+        <p class="rail-kicker">Answer approach</p>
+        <h3>Grounded, then practical</h3>
+        <p>Use matching official documentation when available. If a relevant source cannot be found, the mentor should say so and mark general suggestions clearly.</p>
+        <div class="source-policy"><strong>Privacy note</strong><br>The model uses local session context. Source lookup receives only the short query needed for a search.</div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <style>
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  </style>
+  <script>
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("messageInput");
+    const thread = document.getElementById("thread");
+    const toast = document.getElementById("toast");
+    const sourceSearch = document.getElementById("sourceSearch");
+    const sourceStatus = document.getElementById("sourceStatus");
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.hidden = false;
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => { toast.hidden = true; }, 3200);
+    }
+
+    function appendMessage(role, text) {
+      const article = document.createElement("article");
+      article.className = `message ${role}`;
+      if (role === "assistant") {
+        const mark = document.createElement("div");
+        mark.className = "message-mark";
+        mark.setAttribute("aria-hidden", "true");
+        mark.textContent = "F";
+        article.append(mark);
+      }
+      const body = document.createElement("div");
+      body.className = "message-body";
+      const meta = document.createElement("p");
+      meta.className = "message-meta";
+      const name = document.createElement("strong");
+      name.textContent = role === "user" ? "You" : "Preview";
+      const label = document.createElement("span");
+      label.textContent = role === "user" ? "Now" : "Not connected";
+      meta.append(name, label);
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      body.append(meta, paragraph);
+      article.append(body);
+      thread.append(article);
+      article.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) {
+        input.focus();
+        return;
+      }
+      appendMessage("user", text);
+      appendMessage("assistant", "This is a visual draft, so answer generation and live source lookup are not connected yet. The finished mentor will use the project context and recent messages when answering.");
+      input.value = "";
+      input.focus();
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    document.querySelectorAll("[data-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.prompt;
+        input.focus();
+      });
+    });
+
+    sourceSearch.addEventListener("change", () => {
+      sourceStatus.textContent = sourceSearch.checked
+        ? "Replies include relevant source links when available."
+        : "Source lookup is off; replies use project context and prepared guidance.";
+    });
+
+    document.getElementById("newChat").addEventListener("click", () => {
+      showToast("A new conversation will start here in the connected app.");
+      input.value = "";
+      input.focus();
+      sidebar.classList.remove("open");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = sidebar.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.getElementById("sidebarClose").addEventListener("click", () => {
+      sidebar.classList.remove("open");
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.focus();
+    });
+  </script>
+</body>
+</html>

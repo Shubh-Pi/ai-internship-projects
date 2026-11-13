@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="dark">
+        <meta name="csrf-token" content="{{ csrf_token}}">
+        <title>{{ app_name }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+        <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
+    </head>
+    <body>
+        <div class="app-shell">
+            <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+            <div class="brad-row">
+                <a class="brand" href="#main" aria-label="="Fieldnote project mentor home">
+                    <span class="brand-mark" aria-hidden="true">F</span>
+                    <span>
+                        <span class="brand-name">FIELDNOTE</span>
+                        <span class="brand-subtitle">AI/ML Project mentor</span>
+                    </span>
+                </a>
+                <button id="sidebarClose" class="sidebar-close" type="button"
+                        aria-label="Close navigation">x</button>
+            </div>
+
+            <button id="clear-button" class="new-chat" type=""button>
+              <span>New conversation</span><span aria-hidden="true">+</span>
+            </button>
+
+            <p class="side-label">Current session</p>
+            <ul class="side-list">
+                <li>
+                    <a class="side-link active" href="#main" aria-current="page">
+                        Project mentor
+                        <small>COnversation ends with the session</small>
+                    </a>
+                </li>
+            </ul>
+
+            <p class="side-label">Explore topics</p>
+            <ul class="side-list">
+                <li><a class="side-link" href="#topics">Project planning</a></li>
+                <li><a class="side-link" href="#topics">Data and datasets</a></li>
+                <li><a class="side-link" href="#topics">Training and evaluation</a></li>
+            </ul>
+
+            <div class="side-spacer"></div>
+            <div class="local-note">
+                <strong>Current session</strong>
+                Conversation history stays in memory until the session expires.
+            </div>
+            </nav>
+
+            <main class="workspace" id="main">
+                <header class="topbar">
+                    <button id="menuToggle" class="mobile-menu" type="button"
+                            aria-expanded="false" aria-controls="sidebar">
+                      <span aria-hidden="true">☰</span><span>Menu</span>
+                    </button>
+                    <div class="crumbs">
+                        <span>Workspace</span><span aria-hidden="true"></span>
+                        <strong>Project mentor</strong>
+                    </div>
+                    <span class="session-tag">Current session</span>
+                </header>
+
+                <section class="conversation-wrap" aria-labelledby="conversationTitle">
+                    <div class="conversation-heading">
+                        <div>
+                            <p class="eyebrow">Project workspace</p>
+                            <h1 id="conversationTitle">AI/ML project</h1>
+                            <p class=""heading-meta>
+                                Describe your project and get help with the next step.
+                            </p>
+                        </div>
+                        <span class="project-tag">Project mentor</span>
+                    </div>
+
+                    <p class="preview-notice">
+                        Replies use recent turns from this session. Optional source search
+                        uses approved sites.
+                    </p>
+
+                    <details class="context-mobile">
+                        <summary>Show project context</summary>
+                        <div class="mobile-context-body">
+                            The mentor can help with project scope, data, training, evaluation, 
+                            debugging, deployment, and documentation.
+                        </div>
+                    </details>
+
+                    <div id="messages" class="thread" aria-live="polite"
+                         aria-label="Conversation"></div>
+
+
+                    <div class="suggestions" aria-label="Suggested prompts">
+                        <button class="suggestion" type="button"
+                                data-prompt="Help me scope a beginner AI/ML project.">
+                          Scope a project
+                        </button>
+                        <button class="suggestion" type="button"
+                                data-prompt="WHich evaluation metric should I start with for a classifier?">
+                          Choose an evaluation metric
+                        </button>
+                        <button class="suggestion" type="button"
+                                data-prompt="Explain overfitting in simple terms.">
+                          Explain a concept
+                        </button>
+                    </div>
+
+                    <div class="composer-wrap">
+                      <form id="chat-form" class="composer">
+                        <label class="visually-hidden" for="question">
+                          Ask the project mentor
+                        </label>
+                        <textarea id="question" maxlength="1200" rows="2" required
+                          placeholder="Describe your project or ask about the next step..."></textarea>
+                        <div class="composer-controls">
+                            <label class="search-toggle">
+                                <input id="search-enabled" type="checkbox" checked>
+                                <span>Search approved sources when useful</span>
+                            </label>
+                            <button id="send-button" class="send-button" type="submit">
+                                Send <span aria-hidden="true">↗</span>
+                            </button>
+                        </div>
+                      </form>
+                      <p class="footnote">
+                        When enabled, source search sends the current question to 
+                        DuckDuckGO, not the conversation history.
+                      </p>
+                    </div>
+                </section>
+            </main>
+
+            <aside class="context-rail" aria-labelledby="contextTitle">
+                <div class="rail-header"><h2 id="contextTitle">Working context</h2></div>
+
+                <section class="rail-section">
+                    <p class="rail-kicker">YOur project</p>
+                    <h3>What are you building?</h3>
+                    <p>
+                        Share the task, data, and current challenge so the mentor can tailor 
+                        its guidance.
+                    </p>
+                    <p class="current-step">
+                        <span class="step-number">Tip</span>
+                        Start with the problem you want your project to solve.
+                    </p>
+                </section>
+
+                <section class="rail-section" id="topics">
+                    <p class="rail-kicker">Mentor can help with</p>
+                    <ul class="topic-list">
+                        <li>Scoping an idea</li>
+                        <li>Choosing an algorithm</li>
+                        <li>Finding and preparing data</li>
+                        <li>Training and evaluation</li>
+                        <li>Debugging and next steps</li>
+                    </ul>
+                </section>
+
+                <section class="rail-section">
+                    <p class="rail-kicker">Answer approach</p>
+                    <h3>Grounded, then practical</h3>
+                    <p>
+                        The mentor uses approved source results when available. Check
+                        important advice against the linked material and your project needs.
+                    </p>
+                </section>
+            </aside>
+        </div>
+    </body>
+</html>
