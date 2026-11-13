@@ -1,98 +1,85 @@
 # AI Internship Projects
 
-This repository contains projects I built during my AI internship. Week 1 was about getting comfortable with basic machine learning and Python projects. In Week 2, I built three small web apps: an AI/ML project mentor, a resume screener, and a writing assistant.
+Small projects I built during my AI internship, from a NumPy digit classifier to local AI tools in the browser. The work is split into two weeks; each project has its own folder and can be run on its own.
 
-## Week 1
+## Week 1 · Python and machine learning
 
 ### Handwritten digit recognizer
 
-A NumPy neural network that recognizes handwritten digits from Kaggle's Digit Recognizer dataset. It reached **97.60% validation accuracy**. The saved weights are included so the demo scripts can run without training again.
+A neural network built with NumPy and trained on Kaggle's Digit Recognizer data. It reached **97.60% validation accuracy**. I included the trained weights so the demo scripts can show predictions without retraining.
 
-![Sample MNIST predictions](screenshots/mnist-validation.png)
+![Handwritten digit predictions](screenshots/mnist-validation.png)
 
 ### Rule-based chatbot
 
-A terminal chatbot that responds to questions about topics such as AI, Python, studying, and projects.
+A simple terminal chatbot that matches what you type against topics like AI, Python, studying, and projects.
 
-![Week 1 chatbot](screenshots/chatbot.png)
+![Terminal chatbot](screenshots/chatbot.png)
 
 ### Tic-Tac-Toe
 
-A Tkinter game with Human vs AI and AI vs AI modes. The AI uses minimax to choose its moves.
+A Tkinter game with Human vs AI and AI vs AI modes. The computer chooses moves with minimax.
 
 ![Tic-Tac-Toe game](screenshots/tic-tac-toe.png)
 
-## Week 2
+## Week 2 · Local AI web apps
 
 ### AI/ML project mentor
 
-A browser-based mentor for planning AI and machine learning projects. It can help with project scope, algorithms, datasets, training, evaluation, debugging, and documentation. Answers use a local Ollama model; optional source search looks for material from approved documentation sites.
+A chat assistant for working through an AI/ML project, from choosing a problem and dataset to evaluating and debugging a model. It uses Ollama locally and can optionally search approved documentation sources.
 
-![AI/ML project mentor chat](screenshots/week2/ai-ml-project-mentor.png)
+![AI/ML project mentor](screenshots/week2/ai-ml-project-mentor.png)
 
 ### Resume screening assistant
 
-Upload PDF or TXT resumes alongside a job description to get a ranked shortlist. The score combines text similarity (65%) with coverage of detected job skills (35%), and the results can be downloaded as a CSV. It is a comparison aid; review each resume yourself before making a decision.
+Compare PDF or TXT resumes with a job description and get a ranked shortlist. The score weighs text similarity at 65% and detected skill coverage at 35%; results can be exported as CSV. It is a way to organize a review, not a substitute for reading the resumes.
 
 ![Resume screening form](screenshots/week2/resume-upload.png)
 
-![Resume screening results](screenshots/week2/resume-shortlist.png)
+![Resume shortlist](screenshots/week2/resume-shortlist.png)
 
-### AI writing assistant
+### Writing assistant
 
-Create a blog post or social caption by choosing a topic, tone, length, audience, and key points. You can also ask the app to revise a draft. Text generation runs through a local Ollama model.
+Generate or revise blog posts and social captions. Choose the tone, length, audience, and key points, then shape the draft with follow-up instructions. Text generation runs through a local Ollama model.
 
-![Writing assistant blog draft](screenshots/week2/writing-assistant-blog.png)
+![Blog post draft](screenshots/week2/writing-assistant-blog.png)
 
-![Writing assistant caption draft](screenshots/week2/writing-assistant-caption.png)
+![Social caption draft](screenshots/week2/writing-assistant-caption.png)
 
-## Running the projects
+## Run Week 2
 
-The examples below use Windows PowerShell. Python packages are installed separately for each project, so create and activate a virtual environment inside the project folder before installing them.
+These apps use a shared Python environment and the dependencies in `AI-intern week 2/requirements.txt`. In PowerShell, run this once from the repository root:
+
+~~~powershell
+py -m venv "AI-intern week 2/.venv"
+& "AI-intern week 2/.venv/Scripts/Activate.ps1"
+python -m pip install -r "AI-intern week 2/requirements.txt"
+~~~
+
+Then run the app you want from its folder:
 
 ~~~powershell
 cd "AI-intern week 2/Resume_Screening_AI"
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r ..\requirements.txt
 python app.py
 ~~~
 
-Open the local address printed by Flask in your browser. The resume screener accepts PDF and TXT files, up to 20 resumes per review.
-
-### AI/ML project mentor
-
-Install the app's Python dependencies, then run Ollama locally and download the default model (`qwen3:4b-instruct`). With Ollama available, start the app:
-
 ~~~powershell
 cd "AI-intern week 2/AI_chatbot"
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r ..\requirements.txt
 ollama pull qwen3:4b-instruct
 python app.py
 ~~~
 
-Open `http://127.0.0.1:5000`. You can set the `OLLAMA_MODEL` environment variable before starting the app to use another installed Ollama model. The app also has rule-based fallback replies if Ollama is unavailable.
-
-### AI writing assistant
-
-This app uses Ollama's `qwen3.5:4b` model by default. Start Ollama, install the Python dependencies, pull the model, and run the app:
-
 ~~~powershell
 cd "AI-intern week 2/AI_content_Generator"
-py -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r ..\requirements.txt
 ollama pull qwen3.5:4b
 python app.py
 ~~~
 
-Open the local address printed by Flask. Set `OLLAMA_MODEL` if you want to use a different model that's available in Ollama.
+Open `http://127.0.0.1:5000` in your browser. The mentor and writing assistant need Ollama running locally. The resume screener accepts up to 20 resumes per review.
 
-### Week 1 projects
+## Run Week 1
 
-Create a virtual environment in `AI-intern week 1` and install that folder's requirements:
+Create and activate a virtual environment in the Week 1 folder, then install its dependencies:
 
 ~~~powershell
 cd "AI-intern week 1"
@@ -101,8 +88,6 @@ py -m venv .venv
 python -m pip install -r requirements.txt
 ~~~
 
-For the digit recognizer, download `train.csv`, `test.csv`, and `sample_submission.csv` from the [Kaggle Digit Recognizer data page](https://www.kaggle.com/competitions/digit-recognizer/data) into `AI-intern week 1/data/`. Then run `python neural_network.py` to train, `python present_network.py` to view sample predictions, or `python predict_test.py` to create a Kaggle submission. The chatbot and game run with `python chatbot.py` and `python tic_tac_toe.py`.
+The digit recognizer needs `train.csv`, `test.csv`, and `sample_submission.csv` from [Kaggle's Digit Recognizer data page](https://www.kaggle.com/competitions/digit-recognizer/data), saved under `AI-intern week 1/data/`. Run `python neural_network.py` to train, `python present_network.py` to view sample predictions, or `python predict_test.py` to write a Kaggle submission. The other projects start with `python chatbot.py` and `python tic_tac_toe.py`.
 
-## Data and local files
-
-Kaggle CSV files and generated submission files are kept out of Git. Virtual environments and Python cache files are also ignored. The included `mnist_model.npz` is the small set of trained weights used by the Week 1 demos; it is not a copy of the Kaggle dataset.
+The Kaggle CSVs, generated submissions, virtual environments, and Python cache files are kept out of Git. The included `mnist_model.npz` contains the trained weights used by the digit recognizer demos.
