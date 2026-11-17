@@ -68,6 +68,10 @@ GREETING_PATTERN = re.compile(
     r"(hi|hello|hey)(there)?|good morning|good afternoon|good evening"
 )
 
+FOLLOW_UP_PATTERN = re.compile(
+    r"\b(tell me more|more|go on|explain more)\b"
+)
+
 FALLBACK_REPLIES = [
     "I don't know that topic yet. Ask me about AI, Python, study tips, sleep, water, or project help.",
     "I'm not sure how to answer. Try mentioning AI, Python, studying, sleep, water, or a project.",
@@ -80,39 +84,60 @@ EXIT_COMMANDS = {"bye", "goodbye", "exit", "quit"}
 
 LAST_REPLY = {}
 
+LAST_TOPIC = None
+
+def choose_topic_reply(topic_name):
+    replies = INTENTS[topic_name]["replies"]
+    previous_reply = LAST_REPLY.get(topic_name)
+
+    # Avoid repeating the topic's previous reply immediately.
+    available_replies = [
+        reply for reply in replies if reply != previous_reply
+    ]
+
+    # If there is no alternative, allow the original list.
+    if not available_replies:
+        available_replies = replies
+
+    chosen_reply = random.choice(available_replies)
+    LAST_REPLY[topic_name] = chosen_reply
+    return chosen_reply
+
 def get_response(user_text):
+    global LAST_TOPIC
+
     text = user_text.casefold().strip()
-    
+
     if not text:
         return "I didn't catch that. Please type a message."
-    
+
     greeting_text = text.strip(" .!?")
     if GREETING_PATTERN.fullmatch(greeting_text):
         return random.choice(
-            ["Hello! What would you like to talk about?", "HI there!", "Hey! ASk me about one of my topics."]
-        ) 
-        
+            [
+                "Hello! What would you like to talk about?",
+                "Hi there!",
+                "Hey! Ask me about one of my topics.",
+            ]
+        )
+
     matching_topics = [
         topic_name
         for topic_name, topic_data in INTENTS.items()
         if topic_data["pattern"].search(text)
-    ]    
-    
+    ]
+
     if len(matching_topics) == 1:
-        topic_name = matching_topics[0]
-        replies = INTENTS[topic_name]["replies"]
-        
-        previous_reply = LAST_REPLY.get(topic_name)
-        available_replies = [reply for reply in replies if reply != previous_reply]
-        
-        chosen_reply = random.choice(available_replies)
-        LAST_REPLY[topic_name] = chosen_reply
-        return chosen_reply
-        
+        LAST_TOPIC = matching_topics[0]
+        return choose_topic_reply(LAST_TOPIC)
+
     if len(matching_topics) > 1:
-        topics = ",".join(matching_topics)
-        return f"I spotted a few topics({topics}). Ask me about one at a time."
-    
+        topics = ", ".join(matching_topics)
+        return f"I spotted a few topics ({topics}). Ask me about one at a time."
+
+    if LAST_TOPIC is not None and FOLLOW_UP_PATTERN.search(text):
+        return choose_topic_reply(LAST_TOPIC)
+
     return random.choice(FALLBACK_REPLIES)
 
 def main():

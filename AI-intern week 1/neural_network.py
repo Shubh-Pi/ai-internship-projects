@@ -124,7 +124,7 @@ epochs_without_improvement = 0
 for epoch in range(MAX_EPOCHS):
     shuffled_training_rows = rng.permutation(X_train.shape[0])
     
-    for start in range(0, X_train.shape[0]):
+    for start in range(0, X_train.shape[0], BATCH_SIZE):
         batch_rows = shuffled_training_rows[start : start + BATCH_SIZE]
         batch_x = X_train[batch_rows]
         batch_y = y_train[batch_rows]

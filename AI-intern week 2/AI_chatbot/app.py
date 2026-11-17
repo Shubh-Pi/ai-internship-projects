@@ -11,7 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify, render_template, request, session
 
-APP_NAME = "Fieldnote | AI/ML Project Mentor"
+APP_NAME = "AI/ML Project Mentor"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434/api/chat")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:4b-instruct")
 SESSION_TIMEOUT_SECONDS = 30 * 60

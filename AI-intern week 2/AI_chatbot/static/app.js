@@ -144,20 +144,32 @@ document.querySelectorAll("[data-prompt]").forEach((button) => {
     });
 });
 
-// 7. Mobile navigation
+// 7. Toggle the navigation and project context panels
 
-const sidebar = document.getElementById("sidebar");
 const menuToggle = document.getElementById("menuToggle");
+const contextToggle = document.getElementById("contextToggle");
+const appShell = document.querySelector(".app-shell");
 
 menuToggle.addEventListener("click", () => {
-    const open = sidebar.classList.toggle("open");
+    const open = appShell.classList.toggle("show-left");
     menuToggle.setAttribute("aria-expanded", String(open));
 });
 
 document.getElementById("sidebarClose").addEventListener("click", () => {
-    sidebar.classList.remove("open");
+    appShell.classList.remove("show-left");
     menuToggle.setAttribute("aria-expanded", "false");
     menuToggle.focus();
+});
+
+contextToggle.addEventListener("click", () => {
+    const open = appShell.classList.toggle("show-right");
+    contextToggle.setAttribute("aria-expanded", String(open));
+});
+
+document.getElementById("contextClose").addEventListener("click", () => {
+    appShell.classList.remove("show-right");
+    contextToggle.setAttribute("aria-expanded", "false");
+    contextToggle.focus();
 });
 
 // 8. Keyboard shortcut and initial load

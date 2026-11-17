@@ -13,11 +13,10 @@
         <div class="app-shell">
             <nav class="sidebar" id="sidebar" aria-label="Main navigation">
             <div class="brad-row">
-                <a class="brand" href="#main" aria-label="="Fieldnote project mentor home">
+                <a class="brand" href="#main" aria-label=" project mentor home">
                     <span class="brand-mark" aria-hidden="true">F</span>
                     <span>
-                        <span class="brand-name">FIELDNOTE</span>
-                        <span class="brand-subtitle">AI/ML Project mentor</span>
+                        <span class="brand-name"><strong>AI/ML Project mentor</strong></span>
                     </span>
                 </a>
                 <button id="sidebarClose" class="sidebar-close" type="button"
@@ -54,15 +53,23 @@
 
             <main class="workspace" id="main">
                 <header class="topbar">
-                    <button id="menuToggle" class="mobile-menu" type="button"
-                            aria-expanded="false" aria-controls="sidebar">
-                      <span aria-hidden="true">☰</span><span>Menu</span>
-                    </button>
-                    <div class="crumbs">
-                        <span>Workspace</span><span aria-hidden="true"></span>
-                        <strong>Project mentor</strong>
+                    <div class="topbar-start">
+                        <button id="menuToggle" class="mobile-menu" type="button"
+                                aria-expanded="false" aria-controls="sidebar">
+                          <span aria-hidden="true">☰</span><span>Navigation</span>
+                        </button>
+                        <div class="crumbs">
+                            <span>Workspace</span><span aria-hidden="true">/</span>
+                            <strong>Project mentor</strong>
+                        </div>
                     </div>
-                    <span class="session-tag">Current session</span>
+                    <div class="topbar-end">
+                        <span class="session-tag">Current session</span>
+                        <button id="contextToggle" class="panel-toggle" type="button"
+                                aria-expanded="false" aria-controls="contextRail">
+                            Context
+                        </button>
+                    </div>
                 </header>
 
                 <section class="conversation-wrap" aria-labelledby="conversationTitle">
@@ -134,8 +141,12 @@
                 </section>
             </main>
 
-            <aside class="context-rail" aria-labelledby="contextTitle">
-                <div class="rail-header"><h2 id="contextTitle">Working context</h2></div>
+            <aside class="context-rail" id="contextRail" aria-labelledby="contextTitle">
+                <div class="rail-header">
+                    <h2 id="contextTitle">Working context</h2>
+                    <button id="contextClose" class="sidebar-close" type="button"
+                            aria-label="Close project context">x</button>
+                </div>
 
                 <section class="rail-section">
                     <p class="rail-kicker">YOur project</p>
